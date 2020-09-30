@@ -5,7 +5,9 @@ import hvac
 
 
 class Vault:
-    def _init_(self):
+    """class to connect to local Hashicorp Vault"""
+
+    def __init__(self):
         # configure and connect the client to the local dev server
         self.vault_client = hvac.Client(
             url=os.environ["VAULT_ADDR"], token=os.environ["VAULT_TOKEN"]
