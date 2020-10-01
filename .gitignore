@@ -3,6 +3,7 @@
 *.vscode/
 */venv
 __pycache__/
+.mypy_cache/
 
 # Rasa Ignores
 assistant/.history/
