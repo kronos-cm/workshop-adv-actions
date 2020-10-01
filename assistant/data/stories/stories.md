@@ -60,3 +60,13 @@
     - action_incident_status
     - open_incident_form
     - form{"name":null}
+
+## explain priority
+* open_incident OR password_reset OR problem_email
+    - open_incident_form
+    - form{"name":"open_incident_form"}
+    - slot{"requested_slot": "priority"}
+* explain
+    - utter_explain_priority
+    - open_incident_form
+    - form{"name":null}

@@ -123,7 +123,7 @@
 ## intent:affirm
 - yes
 - yes please
-- yes I would 
+- yes I would
 - please do
 - yup
 - yep

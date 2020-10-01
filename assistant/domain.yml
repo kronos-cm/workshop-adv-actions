@@ -32,6 +32,8 @@ slots:
     type: unfeaturized
   problem_description:
     type: unfeaturized
+  requested_slot:
+    type: text
 
 responses:
   utter_out_of_scope:
