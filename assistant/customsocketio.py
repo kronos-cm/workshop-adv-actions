@@ -1,7 +1,6 @@
 import logging
 import uuid
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional, Text
-
 from rasa.core.channels.channel import InputChannel, OutputChannel, UserMessage
 from rasa.utils.common import raise_warning
 from sanic import Blueprint, response
@@ -38,28 +37,20 @@ class SocketIOOutput(OutputChannel):
 
         await self.sio.emit(self.bot_message_evt, response, room=socket_id)
 
-    async def send_text_message(
-        self, recipient_id: Text, text: Text, **kwargs: Any
-    ) -> None:
+    async def send_text_message(self, recipient_id: Text, text: Text, **kwargs: Any) -> None:
         """Send a message through this channel."""
 
         for message_part in text.strip().split("\n\n"):
             await self._send_message(self.sid, {"text": message_part})
 
-    async def send_image_url(
-        self, recipient_id: Text, image: Text, **kwargs: Any
-    ) -> None:
+    async def send_image_url(self, recipient_id: Text, image: Text, **kwargs: Any) -> None:
         """Sends an image to the output"""
 
         message = {"attachment": {"type": "image", "payload": {"src": image}}}
         await self._send_message(self.sid, message)
 
     async def send_text_with_buttons(
-        self,
-        recipient_id: Text,
-        text: Text,
-        buttons: List[Dict[Text, Any]],
-        **kwargs: Any,
+        self, recipient_id: Text, text: Text, buttons: List[Dict[Text, Any]], **kwargs: Any,
     ) -> None:
         """Sends buttons to the output."""
 
@@ -72,11 +63,7 @@ class SocketIOOutput(OutputChannel):
         # attach all buttons to the last text fragment
         for button in buttons:
             messages[-1]["quick_replies"].append(
-                {
-                    "content_type": "text",
-                    "title": button["title"],
-                    "payload": button["payload"],
-                }
+                {"content_type": "text", "title": button["title"], "payload": button["payload"]}
             )
 
         for message in messages:
@@ -145,15 +132,11 @@ class SocketIOInput(InputChannel):
         self.namespace = namespace
         self.socketio_path = socketio_path
 
-    def blueprint(
-        self, on_new_message: Callable[[UserMessage], Awaitable[Any]]
-    ) -> Blueprint:
+    def blueprint(self, on_new_message: Callable[[UserMessage], Awaitable[Any]]) -> Blueprint:
         # Workaround so that socketio works with requests from other origins.
         # https://github.com/miguelgrinberg/python-socketio/issues/205#issuecomment-493769183
         sio = AsyncServer(async_mode="sanic", cors_allowed_origins=[])
-        socketio_webhook = SocketBlueprint(
-            sio, self.socketio_path, "socketio_webhook", __name__
-        )
+        socketio_webhook = SocketBlueprint(sio, self.socketio_path, "socketio_webhook", __name__)
 
         @socketio_webhook.route("/", methods=["GET"])
         async def health(_: Request) -> HTTPResponse:
@@ -199,7 +182,7 @@ class SocketIOInput(InputChannel):
                 output_channel,
                 sender_id,
                 input_channel=self.name(),
-                metadata=data["metadata"]
+                metadata=data["metadata"],
             )
             await on_new_message(message)
 
