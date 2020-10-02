@@ -1,8 +1,8 @@
 import logging
-from typing import Dict, Text, Any, List, Union, Optional
+from typing import Dict, Text, Any, List, Union
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.forms import FormAction, REQUESTED_SLOT
+from rasa_sdk.forms import FormAction  # , REQUESTED_SLOT
 from rasa_sdk.events import AllSlotsReset, SlotSet, EventType, SessionStarted, ActionExecuted
 from actions.snow import SnowAPI
 from actions.util import anonymous_profile
@@ -22,9 +22,9 @@ def get_user_id_from_event(tracker: Tracker) -> Text:
         # Read the channel's metadata.
         metadata = event.get("metadata", {})
         # If "usedId" key is missing, return anonymous ID.
-        return metadata.get("userId", anonymous_profile.get("id"))
+        return metadata.get("userId", anonymous_profile["id"])
 
-    return anonymous_profile.get("id")
+    return anonymous_profile["id"]
 
 
 class ActionSessionStart(Action):
@@ -46,7 +46,7 @@ class ActionSessionStart(Action):
 
         if user_profile is None:
             id = get_user_id_from_event(tracker)
-            if id == anonymous_profile.get("id"):
+            if id == anonymous_profile["id"]:
                 user_profile = anonymous_profile
             else:
                 # Make an actual call to Snow API.
@@ -90,7 +90,7 @@ class IncidentStatus(Action):
         user_profile = tracker.get_slot("user_profile")
 
         # Handle anonymous profile. No need to call Snow API.
-        if user_profile.get("id") == anonymous_profile.get("id"):
+        if user_profile.get("id") == anonymous_profile["id"]:
             message = "Since you are anonymous, I can't realy tell your incident status :)"
         else:
             incident_states = snow.states_db()
@@ -137,12 +137,12 @@ class OpenIncidentForm(FormAction):
                 ),
                 self.from_trigger_intent(intent="problem_email", value="Problem with email"),
                 self.from_text(
-                    not_intent=["incident_status", "bot_challenge", "help", "affirm", "deny",]
+                    not_intent=["incident_status", "bot_challenge", "help", "affirm", "deny"]
                 ),
             ],
             "problem_description": [
                 self.from_text(
-                    not_intent=["incident_status", "bot_challenge", "help", "affirm", "deny",]
+                    not_intent=["incident_status", "bot_challenge", "help", "affirm", "deny"]
                 )
             ],
             "priority": self.from_entity(entity="priority"),
@@ -189,7 +189,7 @@ class OpenIncidentForm(FormAction):
             return self.build_slot_sets(user_profile)
 
         # Handle anonymous profile. No need to call Snow API.
-        if user_profile.get("id") == anonymous_profile.get("id"):
+        if user_profile.get("id") == anonymous_profile["id"]:
             message = (
                 "Nice try anonymous. But I can't actually create a "
                 "ticket for you. Appreciate your enthusiasm though :)"
