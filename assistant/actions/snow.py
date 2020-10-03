@@ -8,7 +8,7 @@ import signal
 from typing import Dict, Text, Any
 from aiohttp import ClientSession, BasicAuth
 from actions.vault import Vault
-from actions.util import anonymous_profile, priorities, states
+from actions.util import priorities, states
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class SnowAPI:
         async with session.get(url) as resp:
             if resp.status != 200:
                 logger.error("Unable to load user profile. Status: %d", resp.status)
-                return anonymous_profile
+                return {"error": "Unable to get user {id}"}
 
             resp_json = await resp.json(content_type="text/html")
             user = resp_json.get("result")

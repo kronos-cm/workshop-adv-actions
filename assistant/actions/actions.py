@@ -32,7 +32,7 @@ class ActionSessionStart(Action):
         return "action_session_start"
 
     @staticmethod
-    async def fetch_slots(tracker: Tracker) -> List[EventType]:
+    async def fetch_slots(dispatcher: CollectingDispatcher, tracker: Tracker) -> List[EventType]:
         """Add user profile to the slots if it is not set."""
 
         slots = []
@@ -51,6 +51,9 @@ class ActionSessionStart(Action):
             else:
                 # Make an actual call to Snow API.
                 user_profile = await snow.get_user_profile(id)
+                if user_profile.get("error"):
+                    dispatcher.utter_message(f"{user_profile.get('error')}")
+                    return slots
 
             slots.append(SlotSet(key="user_profile", value=user_profile))
 
@@ -68,7 +71,7 @@ class ActionSessionStart(Action):
 
         # any slots that should be carried over should come after the
         # `session_started` event
-        newEvents = await self.fetch_slots(tracker)
+        newEvents = await self.fetch_slots(dispatcher, tracker)
         events.extend(newEvents)
 
         # an `action_listen` should be added at the end as a user message follows
