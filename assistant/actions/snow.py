@@ -74,7 +74,7 @@ class SnowAPI:
                 logger.error("Unable to load user profile. Status: %d", resp.status)
                 return {"error": "Unable to get user {id}"}
 
-            resp_json = await resp.json(content_type="text/html")
+            resp_json = await resp.json()
             user = resp_json.get("result")
             return {"id": id, "name": user.get("name"), "email": user.get("email")}
 
@@ -90,7 +90,7 @@ class SnowAPI:
             if resp.status != 200:
                 return {"error": "Unable to get recent incidents"}
 
-            resp_json = await resp.json(content_type="text/html")
+            resp_json = await resp.json()
             result = resp_json.get("result")
             if result:
                 return {"incidents": result}
@@ -113,13 +113,13 @@ class SnowAPI:
         session = await self.open_session()
         async with session.post(url, json=data) as resp:
             if resp.status != 201:
-                resp_json = await resp.json(content_type="text/html")
+                resp_json = await resp.json()
                 logger.error(
                     "Unable to create incident. Status: %d; Error: %s", resp.status, resp_json
                 )
                 return {"error": "Unable to create incident"}
 
-            resp_json = await resp.json(content_type="text/html")
+            resp_json = await resp.json()
             return resp_json.get("result", {})
 
     @staticmethod
